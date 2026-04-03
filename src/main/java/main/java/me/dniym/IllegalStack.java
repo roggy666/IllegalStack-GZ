@@ -1143,6 +1143,8 @@ public class IllegalStack extends JavaPlugin {
                 serverVersion = ServerVersion.v1_20_R5;
             } else if (bukkitVersion.contains("1.21")) {
                 serverVersion = ServerVersion.v1_21_R1;
+            } else if (bukkitVersion.startsWith("26.")) {
+                serverVersion = ServerVersion.v26_1_R1;
             } else {
                 serverVersion = ServerVersion.valueOf(packageName.replace("org.bukkit.craftbukkit.", ""));
             }
@@ -1167,7 +1169,15 @@ public class IllegalStack extends JavaPlugin {
         int version;
 
         try {
-            version = Integer.parseInt(getVersion().split("_")[1]);
+            String[] parts = getVersion().split("_");
+            int first = Integer.parseInt(parts[0].replace("v", ""));
+            // Old format: v1_XX_RY -> major is XX (parts[1])
+            // New format: v26_1_R1 -> major is 26 (first number)
+            if (first > 1) {
+                version = first;
+            } else {
+                version = Integer.parseInt(parts[1]);
+            }
         } catch (NumberFormatException e) {
             LOGGER.error("Unable to process server version!");
             LOGGER.error("Some features may break unexpectedly!");

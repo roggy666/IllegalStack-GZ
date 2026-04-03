@@ -28,7 +28,8 @@ public enum ServerVersion {
     v1_20_R3,
     v1_20_R4,
     v1_20_R5,
-    v1_21_R1;
+    v1_21_R1,
+    v26_1_R1;
 
     public boolean serverVersionEqual(ServerVersion version) {
         return this.equals(version);
@@ -56,6 +57,13 @@ public enum ServerVersion {
     }
 
     public int getServerMajorVersionNumber() {
-        return Integer.parseInt(this.name().split("_")[1]);
+        String[] parts = this.name().split("_");
+        int first = Integer.parseInt(parts[0].replace("v", ""));
+        // Old format: v1_XX_RY -> major is XX (parts[1])
+        // New format: v26_1_R1 -> major is 26 (first number)
+        if (first > 1) {
+            return first;
+        }
+        return Integer.parseInt(parts[1]);
     }
 }
